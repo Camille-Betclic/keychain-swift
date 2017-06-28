@@ -21,7 +21,14 @@ open class KeychainSwift {
 
   */
   open var accessGroup: String?
-  
+    
+  /** 
+     
+     Specify Service used when working with kSecClassGenericPassword ( default in this lib )
+     Defines uniqueness of an entry for a key
+ 
+   */
+  open var service: String?
   
   /**
    
@@ -58,7 +65,8 @@ open class KeychainSwift {
   */
   @discardableResult
   open func set(_ value: String, forKey key: String,
-                  withAccess access: KeychainSwiftAccessOptions? = nil) -> Bool {
+                  withAccess access: KeychainSwiftAccessOptions? = nil,
+                  withService service: String? = nil) -> Bool {
     
     if let value = value.data(using: String.Encoding.utf8) {
       return set(value, forKey: key, withAccess: access)
@@ -80,7 +88,7 @@ open class KeychainSwift {
   */
   @discardableResult
   open func set(_ value: Data, forKey key: String,
-    withAccess access: KeychainSwiftAccessOptions? = nil) -> Bool {
+                withAccess access: KeychainSwiftAccessOptions? = nil) -> Bool {
     
     delete(key) // Delete any existing key before saving it
 
@@ -94,7 +102,8 @@ open class KeychainSwift {
       KeychainSwiftConstants.valueData   : value,
       KeychainSwiftConstants.accessible  : accessible
     ]
-      
+    
+    query = addServiceWhenPresent(query)
     query = addAccessGroupWhenPresent(query)
     query = addSynchronizableIfRequired(query, addingItems: true)
     lastQueryParameters = query
@@ -164,6 +173,8 @@ open class KeychainSwift {
       KeychainSwiftConstants.matchLimit  : kSecMatchLimitOne
     ]
     
+    
+    query = addServiceWhenPresent(query)
     query = addAccessGroupWhenPresent(query)
     query = addSynchronizableIfRequired(query, addingItems: false)
     lastQueryParameters = query
@@ -210,6 +221,7 @@ open class KeychainSwift {
       KeychainSwiftConstants.attrAccount : prefixedKey
     ]
     
+    query = addServiceWhenPresent(query)
     query = addAccessGroupWhenPresent(query)
     query = addSynchronizableIfRequired(query, addingItems: false)
     lastQueryParameters = query
@@ -241,6 +253,14 @@ open class KeychainSwift {
   /// Returns the key with currently set prefix.
   func keyWithPrefix(_ key: String) -> String {
     return "\(keyPrefix)\(key)"
+  }
+    
+  func addServiceWhenPresent(_ items: [String: Any]) -> [String: Any] {
+    guard let service = service else { return items }
+    
+    var result: [String: Any] = items
+    result[KeychainSwiftConstants.service] = service
+    return result
   }
   
   func addAccessGroupWhenPresent(_ items: [String: Any]) -> [String: Any] {
