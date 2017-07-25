@@ -15,7 +15,7 @@ public struct KeychainSwiftConstants {
   
   /// Used for specifying a String key when setting/getting a Keychain value.
   public static var attrAccount: String { return toString(kSecAttrAccount) }
-
+  
   /// Used for specifying synchronization of keychain items between devices.
   public static var attrSynchronizable: String { return toString(kSecAttrSynchronizable) }
   
@@ -28,12 +28,15 @@ public struct KeychainSwiftConstants {
   /// A return data type used to get the data from the Keychain.
   public static var returnData: String { return toString(kSecReturnData) }
   
+  /// A return data type used to get the attributes from the Keychain.
+  public static var returnAttributes: String { return toString(kSecReturnAttributes) }
+  
   /// Used for specifying a value when setting a Keychain value.
   public static var valueData: String { return toString(kSecValueData) }
-    
+  
   /// Used for specifying a Generic Password when setting a Keychain value.
   public static var genericPasswordData: String { return toString(kSecAttrGeneric) }
-    
+  
   /// Specify kSecAttrService when using GenericPassword kind.
   public static var service: String { return toString(kSecAttrService) }
   
@@ -41,5 +44,3 @@ public struct KeychainSwiftConstants {
     return value as String
   }
 }
-
-
