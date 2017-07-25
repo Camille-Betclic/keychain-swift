@@ -31,6 +31,9 @@ public struct KeychainSwiftConstants {
   /// Used for specifying a value when setting a Keychain value.
   public static var valueData: String { return toString(kSecValueData) }
     
+  /// Used for specifying a Generic Password when setting a Keychain value.
+  public static var genericPasswordData: String { return toString(kSecAttrGeneric) }
+    
   /// Specify kSecAttrService when using GenericPassword kind.
   public static var service: String { return toString(kSecAttrService) }
   

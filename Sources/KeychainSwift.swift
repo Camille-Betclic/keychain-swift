@@ -97,10 +97,10 @@ open class KeychainSwift {
     let prefixedKey = keyWithPrefix(key)
       
     var query: [String : Any] = [
-      KeychainSwiftConstants.klass       : kSecClassGenericPassword,
-      KeychainSwiftConstants.attrAccount : prefixedKey,
-      KeychainSwiftConstants.valueData   : value,
-      KeychainSwiftConstants.accessible  : accessible
+      KeychainSwiftConstants.klass                      : kSecClassGenericPassword,
+      KeychainSwiftConstants.attrAccount                : prefixedKey,
+      KeychainSwiftConstants.valueData                  : value,
+      KeychainSwiftConstants.accessible                 : accessible
     ]
     
     query = addServiceWhenPresent(query)
@@ -112,6 +112,44 @@ open class KeychainSwift {
     
     return lastResultCode == noErr
   }
+    
+    /**
+     
+     Stores the generic data in the keychain item under the given key.
+     
+     - parameter key: Key under which the data is stored in the keychain.
+     - parameter value: Data to be written to the keychain.
+     - parameter withAccess: Value that indicates when your app needs access to the text in the keychain item. By default the .AccessibleWhenUnlocked option is used that permits the data to be accessed only while the device is unlocked by the user.
+     
+     - returns: True if the text was successfully written to the keychain.
+     
+     */
+    @discardableResult
+    open func setGeneric(_ value: Data, forKey key: String,
+                  withAccess access: KeychainSwiftAccessOptions? = nil) -> Bool {
+        
+        delete(key) // Delete any existing key before saving it
+        
+        let accessible = access?.value ?? KeychainSwiftAccessOptions.defaultOption.value
+        
+        let prefixedKey = keyWithPrefix(key)
+        
+        var query: [String : Any] = [
+            KeychainSwiftConstants.klass                      : kSecClassGenericPassword,
+            KeychainSwiftConstants.attrAccount                : prefixedKey,
+            KeychainSwiftConstants.genericPasswordData        : value,
+            KeychainSwiftConstants.accessible                 : accessible
+        ]
+        
+        query = addServiceWhenPresent(query)
+        query = addAccessGroupWhenPresent(query)
+        query = addSynchronizableIfRequired(query, addingItems: true)
+        lastQueryParameters = query
+        
+        lastResultCode = SecItemAdd(query as CFDictionary, nil)
+        
+        return lastResultCode == noErr
+    }
 
   /**
 
